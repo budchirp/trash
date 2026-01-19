@@ -1,5 +1,6 @@
 package dev.cankolay.trash.server.module.auth.context
 
+import dev.cankolay.trash.server.module.security.entity.Permission
 import dev.cankolay.trash.server.module.user.entity.User
 import org.springframework.stereotype.Component
 import org.springframework.web.context.annotation.RequestScope
@@ -15,8 +16,8 @@ class AuthContext {
     var user: User? = null
         get() = field
 
-    var permissions: Set<String> = emptySet()
+    var permissions: Set<Permission> = emptySet()
 
-    fun hasPermission(permission: String): Boolean =
-        permissions.contains(permission)
+    fun hasPermission(permission: Permission): Boolean =
+        permissions.contains(element = permission)
 }

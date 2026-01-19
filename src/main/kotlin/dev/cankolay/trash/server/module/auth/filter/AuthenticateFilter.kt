@@ -26,7 +26,7 @@ class AuthenticateFilter(
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val token = jwtService.extract(token = request.getHeader("Authorization"))
+        val token = jwtService.extract(jwt = request.getHeader("Authorization"))
         if (token == null) {
             response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Missing JWT")
             return

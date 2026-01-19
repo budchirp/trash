@@ -3,7 +3,6 @@ package dev.cankolay.trash.server.module.user.service
 import dev.cankolay.trash.server.common.util.Encryptor
 import dev.cankolay.trash.server.module.auth.context.AuthContext
 import dev.cankolay.trash.server.module.security.service.SecurityTokenService
-import dev.cankolay.trash.server.module.session.exception.UnauthorizedException
 import dev.cankolay.trash.server.module.session.exception.UserNotFoundException
 import dev.cankolay.trash.server.module.session.repository.SessionRepository
 import dev.cankolay.trash.server.module.user.entity.User
@@ -25,7 +24,6 @@ class UserService(
     private val securityTokenService: SecurityTokenService
 ) {
     @Transactional
-    @Throws(UserExistsException::class)
     fun create(email: String, username: String, password: String): User {
         if (exists(email = email, username = username)) {
             throw UserExistsException()
@@ -46,24 +44,24 @@ class UserService(
     fun exists(email: String, username: String) =
         userRepository.existsByEmailAndUsername(email = email, username = username)
 
-    @Throws(UserNotFoundException::class)
-    fun get(userId: String): User {
-        val user = userRepository.findById(userId).orElseThrow { UserNotFoundException() }
+    @Transactional
+    fun get(id: String): User {
+        val user = userRepository.findById(id).orElseThrow { UserNotFoundException() }
         return user.copy()
     }
 
-    fun get(): User = get(userId = authContext.userId!!)
+    @Transactional
+    fun get(): User = get(id = authContext.userId!!)
 
     @Transactional
-    @Throws(InvalidVerificationTokenException::class, UnauthorizedException::class)
-    fun delete(securityTokenJWT: String) {
-        if (!securityTokenService.verify(jwt = securityTokenJWT)) {
+    fun delete(jwt: String) {
+        if (!securityTokenService.verify(jwt = jwt)) {
             throw InvalidVerificationTokenException()
         }
 
         val user = authContext.user!!
 
-        sessionRepository.deleteAllByUserId(user = user.id)
+        sessionRepository.deleteAllByUserId(userId = user.id)
         profileRepository.deleteById(user.profile.id)
 
         userRepository.deleteById(user.id)

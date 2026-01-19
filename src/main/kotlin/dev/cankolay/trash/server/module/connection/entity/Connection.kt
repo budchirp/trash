@@ -1,10 +1,10 @@
-package dev.cankolay.trash.server.module.session.entity
+package dev.cankolay.trash.server.module.connection.entity
 
-import dev.cankolay.trash.server.common.model.UserAgentPlatform
+import dev.cankolay.trash.server.module.application.entity.Application
+import dev.cankolay.trash.server.module.application.entity.toDto
 import dev.cankolay.trash.server.module.auth.entity.Token
 import dev.cankolay.trash.server.module.auth.entity.toDto
-import dev.cankolay.trash.server.module.session.dto.SessionDto
-import dev.cankolay.trash.server.module.session.dto.SessionDtoDevice
+import dev.cankolay.trash.server.module.connection.dto.ConnectionDto
 import dev.cankolay.trash.server.module.user.entity.User
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
@@ -12,24 +12,19 @@ import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
 
 @Entity
-@Table(name = "sessions")
-data class Session(
+@Table(name = "connections")
+data class Connection(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "token_id", nullable = false)
     val token: Token,
 
-    val ip: String,
-    val device: String,
-
-    val os: String,
-    val browser: String,
-
-    @Enumerated(value = EnumType.STRING)
-    val platform: UserAgentPlatform,
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "application_id", nullable = false)
+    val application: Application,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
@@ -44,13 +39,8 @@ data class Session(
     val updatedAt: Instant? = null,
 )
 
-fun Session.toDto() = SessionDto(
+fun Connection.toDto() = ConnectionDto(
+    id = this.id,
+    application = this.application.toDto(),
     token = this.token.toDto(),
-    ip = this.ip,
-    browser = this.browser,
-    device = SessionDtoDevice(
-        name = this.device,
-        platform = this.platform.name,
-        os = this.os
-    ),
 )

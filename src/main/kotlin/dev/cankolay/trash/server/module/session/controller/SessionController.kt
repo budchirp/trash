@@ -6,10 +6,9 @@ import dev.cankolay.trash.server.common.service.RequestInfoService
 import dev.cankolay.trash.server.common.util.Controller
 import dev.cankolay.trash.server.common.util.UserAgentParser
 import dev.cankolay.trash.server.module.auth.annotation.Authenticate
+import dev.cankolay.trash.server.module.session.dto.SessionDto
 import dev.cankolay.trash.server.module.session.dto.request.CreateSessionRequestDto
 import dev.cankolay.trash.server.module.session.dto.response.CreateSessionResponseDto
-import dev.cankolay.trash.server.module.session.dto.response.GetAllSessionsResponse
-import dev.cankolay.trash.server.module.session.dto.response.GetSessionResponse
 import dev.cankolay.trash.server.module.session.entity.toDto
 import dev.cankolay.trash.server.module.session.service.SessionService
 import jakarta.servlet.http.HttpServletRequest
@@ -52,7 +51,7 @@ class SessionController(
 
     @Authenticate
     @GetMapping("/all")
-    fun getAll(): ResponseEntity<ApiResponse<GetAllSessionsResponse>> =
+    fun getAll(): ResponseEntity<ApiResponse<List<SessionDto>>> =
         controller {
             ResponseEntity.ok().body(
                 ApiResponse(
@@ -65,7 +64,7 @@ class SessionController(
 
     @Authenticate
     @GetMapping("/{token}")
-    fun get(@PathVariable token: String): ResponseEntity<ApiResponse<GetSessionResponse>> =
+    fun get(@PathVariable token: String): ResponseEntity<ApiResponse<SessionDto>> =
         controller {
             ResponseEntity.ok().body(
                 ApiResponse(
@@ -78,7 +77,7 @@ class SessionController(
 
     @Authenticate
     @GetMapping
-    fun get(): ResponseEntity<ApiResponse<GetSessionResponse>> =
+    fun get(): ResponseEntity<ApiResponse<SessionDto>> =
         controller {
             ResponseEntity.ok().body(
                 ApiResponse(

@@ -1,5 +1,7 @@
 package dev.cankolay.trash.server.module.session.dto
 
+import dev.cankolay.trash.server.module.auth.dto.TokenDto
+
 data class SessionDtoDevice(
     val name: String,
     val platform: String,
@@ -7,13 +9,10 @@ data class SessionDtoDevice(
 )
 
 data class SessionDto(
-    val user: String,
     val token: TokenDto,
 
     val ip: String,
     val browser: String,
 
-    val device: SessionDtoDevice,
-
-    val expiresAt: String
+    val device: SessionDtoDevice
 )

@@ -12,7 +12,6 @@ class SecurityTokenService(
     private val encryptor: Encryptor,
     private val authContext: AuthContext
 ) {
-    @Throws(InvalidPasswordException::class)
     fun create(password: String): String {
         val user = authContext.user!!
 
@@ -20,13 +19,12 @@ class SecurityTokenService(
             throw InvalidPasswordException()
         }
 
-        return jwtService.generate(id = user.id, duration = 1000 * 60 * 15)
+        return jwtService.generate(userId = user.id, duration = 1000 * 60 * 15)
     }
 
     fun verify(jwt: String): Boolean {
         if (!jwtService.verify(jwt = jwt)) return false
-
-        if (jwtService.id(jwt = jwt) != authContext.userId) return false
+        if (jwtService.getUserId(jwt = jwt) != authContext.userId) return false
 
         return true
     }

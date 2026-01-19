@@ -5,6 +5,9 @@ spring:
     url: jdbc:postgresql://localhost:5432/trash
     username: postgres
     password: can
+  devtools:
+    restart:
+      enabled: false
   jpa:
     hibernate:
       ddl-auto: update

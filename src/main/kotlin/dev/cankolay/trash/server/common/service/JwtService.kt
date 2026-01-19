@@ -1,7 +1,7 @@
 package dev.cankolay.trash.server.common.service
 
-import dev.cankolay.trash.server.module.session.entity.Token
-import dev.cankolay.trash.server.module.session.model.JWTPayload
+import dev.cankolay.trash.server.common.model.JWTPayload
+import dev.cankolay.trash.server.module.auth.entity.Token
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
@@ -13,30 +13,30 @@ class JwtService(
     @Value("\${app.jwt.secret}")
     private val secret: String
 ) {
-    private fun secretKey() = Keys.hmacShaKeyFor(secret.toByteArray())
+    private fun key() = Keys.hmacShaKeyFor(secret.toByteArray())
 
-    fun extract(token: String?): String? =
-        if (token != null && token.startsWith(prefix = "Bearer ")) token.removePrefix(prefix = "Bearer ") else null
+    fun extract(jwt: String?): String? =
+        if (jwt != null && jwt.startsWith(prefix = "Bearer ")) jwt.removePrefix(prefix = "Bearer ") else null
 
-    fun generate(id: String, token: Token? = null, duration: Long = 1000L * 60 * 60 * 24 * 30): String {
+    fun generate(userId: String, token: Token? = null, duration: Long = 1000L * 60 * 60 * 24 * 30): String {
         val now = System.currentTimeMillis()
 
         val builder = Jwts.builder()
             .subject("user")
-            .claim("id", id)
+            .claim("id", userId)
 
         token?.let { builder.claim("token", it.id) }
 
         return builder
             .expiration(Date(now + duration))
             .issuedAt(Date(now))
-            .signWith(secretKey())
+            .signWith(key())
             .compact()
     }
 
 
     fun verify(jwt: String): Boolean = try {
-        Jwts.parser().verifyWith(secretKey()).build().parseSignedClaims(jwt)
+        Jwts.parser().verifyWith(key()).build().parseSignedClaims(jwt)
 
         true
     } catch (_: Exception) {
@@ -44,7 +44,7 @@ class JwtService(
     }
 
     fun payload(jwt: String): JWTPayload {
-        val payload = Jwts.parser().verifyWith(secretKey()).build().parseSignedClaims(jwt).payload
+        val payload = Jwts.parser().verifyWith(key()).build().parseSignedClaims(jwt).payload
 
         return JWTPayload(
             id = payload["id"].toString(),
@@ -52,8 +52,8 @@ class JwtService(
         )
     }
 
-    fun id(jwt: String): String {
-        val payload = Jwts.parser().verifyWith(secretKey()).build().parseSignedClaims(jwt).payload
+    fun getUserId(jwt: String): String {
+        val payload = Jwts.parser().verifyWith(key()).build().parseSignedClaims(jwt).payload
 
         return payload["id"].toString()
     }

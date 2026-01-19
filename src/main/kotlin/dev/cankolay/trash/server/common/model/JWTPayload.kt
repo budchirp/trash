@@ -1,4 +1,4 @@
-package dev.cankolay.trash.server.module.session.model
+package dev.cankolay.trash.server.common.model
 
 data class JWTPayload(
     val id: String,

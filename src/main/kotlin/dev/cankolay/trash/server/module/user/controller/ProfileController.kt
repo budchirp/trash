@@ -23,7 +23,7 @@ class ProfileController(
     @PatchMapping
     fun update(@RequestBody body: UpdateProfileRequestDto): ResponseEntity<ApiResponse<Nothing>> =
         controller {
-            profileService.update(name = body.name)
+            profileService.update(name = body.name, picture = body.picture)
 
             ResponseEntity.ok().body(
                 ApiResponse(

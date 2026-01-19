@@ -15,10 +15,11 @@ class ProfileService(
     fun create(): Profile = profileRepository.save(Profile())
 
     @Transactional
-    fun update(name: String?) {
+    fun update(name: String?, picture: String?) {
         val user = authContext.user!!
 
         user.profile.name = name ?: user.profile.name
+        user.profile.picture = picture ?: user.profile.picture
 
         profileRepository.save(user.profile)
     }
