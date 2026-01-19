@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 @OpenAPIDefinition(
-    info = Info(title = "My API", version = "v1"),
+    info = Info(title = "Trash", version = "v1"),
     security = [SecurityRequirement(name = "bearer")]
 )
 @SecuritySchemes(

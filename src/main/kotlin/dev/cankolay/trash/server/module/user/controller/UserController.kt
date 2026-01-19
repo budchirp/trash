@@ -1,12 +1,10 @@
 package dev.cankolay.trash.server.module.user.controller
 
 import dev.cankolay.trash.server.common.model.ApiResponse
-import dev.cankolay.trash.server.common.security.annotation.Authenticate
 import dev.cankolay.trash.server.common.service.I18nService
 import dev.cankolay.trash.server.common.util.Controller
-import dev.cankolay.trash.server.module.user.dto.request.CreateTokenRequestDto
+import dev.cankolay.trash.server.module.auth.annotation.Authenticate
 import dev.cankolay.trash.server.module.user.dto.request.CreateUserRequestDto
-import dev.cankolay.trash.server.module.user.dto.response.CreateTokenResponseDto
 import dev.cankolay.trash.server.module.user.dto.response.GetProfileResponseDto
 import dev.cankolay.trash.server.module.user.entity.toDto
 import dev.cankolay.trash.server.module.user.service.UserService
@@ -52,27 +50,12 @@ class UserController(
     @DeleteMapping
     fun delete(@RequestParam(value = "token") token: String): ResponseEntity<ApiResponse<Nothing>> =
         controller {
-            userService.delete(token = token)
+            userService.delete(securityTokenJWT = token)
 
             ResponseEntity.ok().body(
                 ApiResponse(
                     message = i18nService.get("success"),
                     code = "success"
-                )
-            )
-        }
-
-    @Authenticate
-    @PostMapping("/security/token")
-    fun createSecurityToken(@RequestBody body: CreateTokenRequestDto): ResponseEntity<ApiResponse<CreateTokenResponseDto>> =
-        controller {
-            ResponseEntity.ok().body(
-                ApiResponse(
-                    message = i18nService.get("success"),
-                    code = "success",
-                    data = CreateTokenResponseDto(
-                        token = userService.createToken(password = body.password)
-                    )
                 )
             )
         }

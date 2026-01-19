@@ -1,11 +1,13 @@
 [versions]
+kotlin = "2.3.0"
+
 lombok = "1.18.42"
 
 spring-boot = "4.0.1"
 spring-dependency = "1.1.7"
 
-springdoc = "2.2.0"
-scalar = "0.1.0"
+springdoc = "3.0.1"
+scalar = "0.4.4"
 
 flyway = "11.20.0"
 postgresql = "42.7.8"
@@ -31,7 +33,7 @@ spring-boot-web = { module = "org.springframework.boot:spring-boot-starter-web",
 
 spring-boot-devtools = { module = "org.springframework.boot:spring-boot-devtools", version.ref = "spring-boot" }
 
-spring-doc = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
+springdoc = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "springdoc" }
 scalar = { module = "com.scalar.maven:scalar", version.ref = "scalar" }
 
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }

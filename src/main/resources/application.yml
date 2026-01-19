@@ -14,13 +14,15 @@ spring:
 
 springdoc:
   api-docs:
-    path: /docs
+    path: /openapi.json
   swagger-ui:
     enabled: true
+    path: /swagger
 
 scalar:
-  url: http://localhost:8080/docs
-  enabled: false
+  url: http://localhost:8080/openapi.json
+  path: /scalar
+  enabled: true
 
 app:
   jwt:

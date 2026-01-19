@@ -1,13 +1,13 @@
 plugins {
-    kotlin("jvm") version "2.3.0"
-    kotlin("plugin.spring") version "2.3.0"
-    kotlin("plugin.jpa") version "2.3.0"
+    kotlin("jvm") version libs.versions.kotlin
+    kotlin("plugin.spring") version libs.versions.kotlin
+    kotlin("plugin.jpa") version libs.versions.kotlin
 
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency)
 }
 
-group = "com.cankolay.trash.core"
+group = "dev.cankolay.trash.server"
 version = "0.1.0-SNAPSHOT"
 
 java {
@@ -31,7 +31,7 @@ dependencies {
 
     implementation(libs.bundles.spring.boot)
 
-    implementation(libs.spring.doc)
+    implementation(libs.springdoc)
     implementation(libs.scalar)
 
     implementation(libs.jackson)

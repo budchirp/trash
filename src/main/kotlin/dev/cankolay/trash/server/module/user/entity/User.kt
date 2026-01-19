@@ -5,6 +5,7 @@ import dev.cankolay.trash.server.module.user.dto.UserDto
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
+import java.time.Instant
 import java.util.*
 
 @Entity
@@ -24,18 +25,16 @@ data class User(
     @JoinColumn(name = "profile_id", referencedColumnName = "id")
     var profile: Profile,
 
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
     var sessions: MutableSet<Session> = mutableSetOf(),
 
     @CreationTimestamp
-    @Temporal(value = TemporalType.TIMESTAMP)
     @Column(name = "created_at", updatable = false)
-    val createdAt: Date = Date(),
+    val createdAt: Instant? = null,
 
     @UpdateTimestamp
-    @Temporal(value = TemporalType.TIMESTAMP)
     @Column(name = "updated_at")
-    val updatedAt: Date = Date(),
+    val updatedAt: Instant? = null,
 )
 
 fun User.toDto() = UserDto(

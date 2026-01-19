@@ -1,9 +1,9 @@
 package dev.cankolay.trash.server.module.user.controller
 
 import dev.cankolay.trash.server.common.model.ApiResponse
-import dev.cankolay.trash.server.common.security.annotation.Authenticate
 import dev.cankolay.trash.server.common.service.I18nService
 import dev.cankolay.trash.server.common.util.Controller
+import dev.cankolay.trash.server.module.auth.annotation.Authenticate
 import dev.cankolay.trash.server.module.user.dto.request.UpdateProfileRequestDto
 import dev.cankolay.trash.server.module.user.service.ProfileService
 import org.springframework.http.ResponseEntity

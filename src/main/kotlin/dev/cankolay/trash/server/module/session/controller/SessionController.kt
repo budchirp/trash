@@ -1,11 +1,11 @@
 package dev.cankolay.trash.server.module.session.controller
 
 import dev.cankolay.trash.server.common.model.ApiResponse
-import dev.cankolay.trash.server.common.security.annotation.Authenticate
 import dev.cankolay.trash.server.common.service.I18nService
 import dev.cankolay.trash.server.common.service.RequestInfoService
-import dev.cankolay.trash.server.common.service.UserAgentParser
 import dev.cankolay.trash.server.common.util.Controller
+import dev.cankolay.trash.server.common.util.UserAgentParser
+import dev.cankolay.trash.server.module.auth.annotation.Authenticate
 import dev.cankolay.trash.server.module.session.dto.request.CreateSessionRequestDto
 import dev.cankolay.trash.server.module.session.dto.response.CreateSessionResponseDto
 import dev.cankolay.trash.server.module.session.dto.response.GetAllSessionsResponse
@@ -42,10 +42,49 @@ class SessionController(
                         token = sessionService.create(
                             userAgent = userAgentParser(userAgent),
                             ip = ip,
-                            username = body.username,
+                            email = body.email,
                             password = body.password
                         )
                     )
+                )
+            )
+        }
+
+    @Authenticate
+    @GetMapping("/all")
+    fun getAll(): ResponseEntity<ApiResponse<GetAllSessionsResponse>> =
+        controller {
+            ResponseEntity.ok().body(
+                ApiResponse(
+                    message = i18nService.get("success"),
+                    code = "success",
+                    data = sessionService.getAll().map { session -> session.toDto() }
+                )
+            )
+        }
+
+    @Authenticate
+    @GetMapping("/{token}")
+    fun get(@PathVariable token: String): ResponseEntity<ApiResponse<GetSessionResponse>> =
+        controller {
+            ResponseEntity.ok().body(
+                ApiResponse(
+                    message = i18nService.get("success"),
+                    code = "success",
+                    data = sessionService.get(tokenId = token).toDto()
+                )
+            )
+        }
+
+    @Authenticate
+    @GetMapping
+    fun get(): ResponseEntity<ApiResponse<GetSessionResponse>> =
+        controller {
+            ResponseEntity.ok().body(
+                ApiResponse(
+                    message = i18nService.get("success"),
+                    code = "success",
+                    data = sessionService.get().toDto()
                 )
             )
         }
@@ -68,46 +107,8 @@ class SessionController(
     @DeleteMapping("/{token}")
     fun delete(@PathVariable token: String): ResponseEntity<ApiResponse<Nothing>> =
         controller {
-            sessionService.delete(token = token)
+            sessionService.delete(tokenId = token)
 
-            ResponseEntity.ok().body(
-                ApiResponse(
-                    message = i18nService.get("success"),
-                    code = "success"
-                )
-            )
-        }
-
-    @Authenticate
-    @GetMapping
-    fun getAll(): ResponseEntity<ApiResponse<GetAllSessionsResponse>> =
-        controller {
-            ResponseEntity.ok().body(
-                ApiResponse(
-                    message = i18nService.get("success"),
-                    code = "success",
-                    data = sessionService.getAll().map { session -> session.toDto() }
-                )
-            )
-        }
-
-    @Authenticate
-    @GetMapping("/{token}")
-    fun get(@PathVariable token: String): ResponseEntity<ApiResponse<GetSessionResponse>> =
-        controller {
-            ResponseEntity.ok().body(
-                ApiResponse(
-                    message = i18nService.get("success"),
-                    code = "success",
-                    data = sessionService.get(token = token).toDto()
-                )
-            )
-        }
-
-    @Authenticate
-    @GetMapping("/verify")
-    fun verify(): ResponseEntity<ApiResponse<Nothing>> =
-        controller {
             ResponseEntity.ok().body(
                 ApiResponse(
                     message = i18nService.get("success"),

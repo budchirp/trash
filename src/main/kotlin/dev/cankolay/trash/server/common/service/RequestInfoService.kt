@@ -6,8 +6,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class RequestInfoService {
-
-    fun getUserAgent(request: HttpServletRequest): String =
+    fun getUserAgent(request: HttpServletRequest) =
         request.getHeader("User-Agent") ?: "Unknown"
 
     fun getClientIp(request: HttpServletRequest): String {

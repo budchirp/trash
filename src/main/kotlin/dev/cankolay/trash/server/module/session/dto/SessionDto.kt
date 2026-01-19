@@ -1,15 +1,19 @@
 package dev.cankolay.trash.server.module.session.dto
 
+data class SessionDtoDevice(
+    val name: String,
+    val platform: String,
+    val os: String,
+)
+
 data class SessionDto(
-    val token: String,
+    val user: String,
+    val token: TokenDto,
 
     val ip: String,
-
-    val device: String,
-    val platform: String,
-
-    val os: String,
     val browser: String,
+
+    val device: SessionDtoDevice,
 
     val expiresAt: String
 )

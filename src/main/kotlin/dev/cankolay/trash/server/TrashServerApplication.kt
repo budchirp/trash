@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class TrashServerApplication
 
 fun main(args: Array<String>) {
-    runApplication<dev.cankolay.trash.server.TrashServerApplication>(*args)
+    runApplication<TrashServerApplication>(*args)
 }

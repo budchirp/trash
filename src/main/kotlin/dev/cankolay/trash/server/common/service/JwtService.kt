@@ -1,5 +1,6 @@
 package dev.cankolay.trash.server.common.service
 
+import dev.cankolay.trash.server.module.session.entity.Token
 import dev.cankolay.trash.server.module.session.model.JWTPayload
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
@@ -17,13 +18,16 @@ class JwtService(
     fun extract(token: String?): String? =
         if (token != null && token.startsWith(prefix = "Bearer ")) token.removePrefix(prefix = "Bearer ") else null
 
-    fun generate(id: String, token: String? = null, duration: Long = 1000L * 60 * 60 * 24 * 30): String {
+    fun generate(id: String, token: Token? = null, duration: Long = 1000L * 60 * 60 * 24 * 30): String {
         val now = System.currentTimeMillis()
 
-        return Jwts.builder()
+        val builder = Jwts.builder()
             .subject("user")
             .claim("id", id)
-            .claim("token", token)
+
+        token?.let { builder.claim("token", it.id) }
+
+        return builder
             .expiration(Date(now + duration))
             .issuedAt(Date(now))
             .signWith(secretKey())

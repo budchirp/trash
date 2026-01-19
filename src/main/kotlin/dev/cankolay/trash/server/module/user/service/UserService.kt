@@ -1,10 +1,10 @@
 package dev.cankolay.trash.server.module.user.service
 
-import dev.cankolay.trash.server.common.service.AuthService
-import dev.cankolay.trash.server.common.service.JwtService
 import dev.cankolay.trash.server.common.util.Encryptor
-import dev.cankolay.trash.server.module.session.exception.InvalidPasswordException
+import dev.cankolay.trash.server.module.auth.context.AuthContext
+import dev.cankolay.trash.server.module.security.service.SecurityTokenService
 import dev.cankolay.trash.server.module.session.exception.UnauthorizedException
+import dev.cankolay.trash.server.module.session.exception.UserNotFoundException
 import dev.cankolay.trash.server.module.session.repository.SessionRepository
 import dev.cankolay.trash.server.module.user.entity.User
 import dev.cankolay.trash.server.module.user.exception.InvalidVerificationTokenException
@@ -20,19 +20,14 @@ class UserService(
     private val userRepository: UserRepository,
     private val profileRepository: ProfileRepository,
     private val sessionRepository: SessionRepository,
-    private val authService: AuthService,
-    private val jwtService: JwtService,
-    private val encryptor: Encryptor
+    private val authContext: AuthContext,
+    private val encryptor: Encryptor,
+    private val securityTokenService: SecurityTokenService
 ) {
-    fun get(): User {
-        val user = authService.user()
-        return user.copy()
-    }
-
     @Transactional
     @Throws(UserExistsException::class)
     fun create(email: String, username: String, password: String): User {
-        userRepository.findByUsername(username)?.let {
+        if (exists(email = email, username = username)) {
             throw UserExistsException()
         }
 
@@ -48,33 +43,29 @@ class UserService(
         )
     }
 
-    @Throws(InvalidPasswordException::class)
-    fun createToken(password: String): String {
-        val user = authService.user()
+    fun exists(email: String, username: String) =
+        userRepository.existsByEmailAndUsername(email = email, username = username)
 
-        if (!encryptor.check(password = password, encrypted = user.password)) {
-            throw InvalidPasswordException()
-        }
-
-        return jwtService.generate(id = user.id, duration = 1000 * 60 * 15)
+    @Throws(UserNotFoundException::class)
+    fun get(userId: String): User {
+        val user = userRepository.findById(userId).orElseThrow { UserNotFoundException() }
+        return user.copy()
     }
+
+    fun get(): User = get(userId = authContext.userId!!)
 
     @Transactional
     @Throws(InvalidVerificationTokenException::class, UnauthorizedException::class)
-    fun delete(token: String) {
-        val user = authService.user()
-
-        if (!jwtService.verify(jwt = token)) {
+    fun delete(securityTokenJWT: String) {
+        if (!securityTokenService.verify(jwt = securityTokenJWT)) {
             throw InvalidVerificationTokenException()
         }
 
-        if (user.id != jwtService.id(jwt = token)) {
-            throw UnauthorizedException()
-        }
+        val user = authContext.user!!
 
         sessionRepository.deleteAllByUserId(user = user.id)
         profileRepository.deleteById(user.profile.id)
 
-        userRepository.deleteByUsername(username = user.username)
+        userRepository.deleteById(user.id)
     }
 }

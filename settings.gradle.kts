@@ -1,1 +1,1 @@
-rootProject.name = "trash-server"
+rootProject.name = "trash"

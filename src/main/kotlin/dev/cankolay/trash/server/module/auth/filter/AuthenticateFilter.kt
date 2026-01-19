@@ -1,12 +1,12 @@
-package dev.cankolay.trash.server.common.security.filter
+package dev.cankolay.trash.server.module.auth.filter
 
-import dev.cankolay.trash.server.common.security.annotation.Authenticate
 import dev.cankolay.trash.server.common.service.JwtService
+import dev.cankolay.trash.server.module.auth.annotation.Authenticate
+import dev.cankolay.trash.server.module.auth.context.AuthContext
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.core.annotation.Order
 import org.springframework.stereotype.Component
 import org.springframework.web.context.request.RequestContextHolder
 import org.springframework.web.context.request.ServletRequestAttributes
@@ -16,16 +16,11 @@ import org.springframework.web.method.HandlerMethod
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping
 
 @Component
-class AuthFilter(
-    private val jwtService: JwtService
+@Order(1)
+class AuthenticateFilter(
+    private val jwtService: JwtService,
+    private val authContext: AuthContext
 ) : OncePerRequestFilter() {
-
-    override fun shouldNotFilter(request: HttpServletRequest): Boolean {
-        val handler = getHandler(request) ?: return true
-        return !(handler.method.isAnnotationPresent(Authenticate::class.java)
-                || handler.beanType.isAnnotationPresent(Authenticate::class.java))
-    }
-
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
@@ -44,13 +39,18 @@ class AuthFilter(
 
         val payload = jwtService.payload(token)
 
-        SecurityContextHolder.getContext().authentication = UsernamePasswordAuthenticationToken(
-            payload.id,
-            payload.token,
-            emptyList()
-        )
+        authContext.authenticated = true
+
+        authContext.userId = payload.id
+        authContext.tokenId = payload.token
 
         filterChain.doFilter(request, response)
+    }
+
+    override fun shouldNotFilter(request: HttpServletRequest): Boolean {
+        val handler = getHandler(request) ?: return true
+        return !(handler.method.isAnnotationPresent(Authenticate::class.java)
+                || handler.beanType.isAnnotationPresent(Authenticate::class.java))
     }
 
     private fun getHandler(request: HttpServletRequest): HandlerMethod? {

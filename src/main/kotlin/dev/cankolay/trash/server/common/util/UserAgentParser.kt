@@ -1,19 +1,9 @@
-package dev.cankolay.trash.server.common.service
+package dev.cankolay.trash.server.common.util
 
+import dev.cankolay.trash.server.common.model.UserAgent
+import dev.cankolay.trash.server.common.model.UserAgentPlatform
 import nl.basjes.parse.useragent.UserAgentAnalyzer
 import org.springframework.stereotype.Component
-
-enum class UserAgentPlatform {
-    MOBILE, DESKTOP, TABLET
-}
-
-data class UserAgent(
-    val device: String,
-    val platform: UserAgentPlatform,
-
-    val os: String,
-    val browser: String,
-)
 
 @Component
 class UserAgentParser {
