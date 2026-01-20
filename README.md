@@ -12,10 +12,7 @@
 ## TODO
 
 - [ ] Translate missing keys
-- [ ] Unify error responses
 - [ ] Email confirmation
 - [ ] Password reset
 - [ ] Rate limiting
 - [ ] Some kind of bot protection
-- [ ] Migrate deprecated functions
-- [ ] App ID and Permission system

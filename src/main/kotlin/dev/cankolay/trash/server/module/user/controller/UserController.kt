@@ -34,7 +34,7 @@ class UserController(
     @Authenticate
     @GetMapping
     fun get(): ResponseEntity<ApiResponse<UserDto>> =
-        controller {
+        controller(permissions = listOf("user:read")) {
             ResponseEntity.ok().body(
                 ApiResponse(
                     message = i18nService.get("success"),
@@ -47,7 +47,7 @@ class UserController(
     @Authenticate
     @DeleteMapping
     fun delete(@RequestParam(value = "token") token: String): ResponseEntity<ApiResponse<Nothing>> =
-        controller {
+        controller(permissions = listOf("user:delete")) {
             userService.delete(jwt = token)
 
             ResponseEntity.ok().body(

@@ -22,7 +22,7 @@ class ProfileController(
     @Authenticate
     @PatchMapping
     fun update(@RequestBody body: UpdateProfileRequestDto): ResponseEntity<ApiResponse<Nothing>> =
-        controller {
+        controller(permissions = listOf("profile:update")) {
             profileService.update(name = body.name, picture = body.picture)
 
             ResponseEntity.ok().body(

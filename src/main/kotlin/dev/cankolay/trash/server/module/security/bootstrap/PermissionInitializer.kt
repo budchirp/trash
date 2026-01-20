@@ -14,11 +14,17 @@ class PermissionInitializer(
     companion object {
         val PERMISSONS = listOf(
             "user:read",
-            "profile:read",
-            "profile:write",
+            "user:delete",
+            "profile:update",
             "session:read",
-            "session:revoke",
-            "all"
+            "session:delete",
+            "application:read",
+            "application:create",
+            "application:delete",
+            "connection:read",
+            "connection:create",
+            "connection:delete",
+            "*"
         )
     }
 

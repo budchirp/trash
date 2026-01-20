@@ -14,7 +14,6 @@ class AuthContext {
     var tokenId: String? = null
 
     var user: User? = null
-        get() = field
 
     var permissions: Set<Permission> = emptySet()
 

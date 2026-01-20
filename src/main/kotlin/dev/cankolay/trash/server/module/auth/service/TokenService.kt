@@ -1,6 +1,7 @@
 package dev.cankolay.trash.server.module.auth.service
 
 import dev.cankolay.trash.server.module.auth.entity.Token
+import dev.cankolay.trash.server.module.auth.entity.TokenType
 import dev.cankolay.trash.server.module.auth.exception.TokenNotFoundException
 import dev.cankolay.trash.server.module.auth.repository.TokenRepository
 import dev.cankolay.trash.server.module.security.repository.PermissionRepository
@@ -16,10 +17,11 @@ class TokenService(
         tokenRepository.findById(id).orElseThrow { TokenNotFoundException() }
 
     @Transactional
-    fun create(permissionKeys: List<String> = listOf("all")): Token {
+    fun create(type: TokenType = TokenType.SESSION, permissionKeys: List<String> = listOf("*")): Token {
         return tokenRepository.save(
             Token(
-                permissions = permissionRepository.findByKeyIn(keys = permissionKeys.toSet()).toMutableSet()
+                permissions = permissionRepository.findByKeyIn(keys = permissionKeys.toSet()).toMutableSet(),
+                type = type
             )
         )
     }

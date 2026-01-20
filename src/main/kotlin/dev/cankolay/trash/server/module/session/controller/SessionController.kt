@@ -52,7 +52,7 @@ class SessionController(
     @Authenticate
     @GetMapping("/all")
     fun getAll(): ResponseEntity<ApiResponse<List<SessionDto>>> =
-        controller {
+        controller(permissions = listOf("session:read")) {
             ResponseEntity.ok().body(
                 ApiResponse(
                     message = i18nService.get("success"),
@@ -65,7 +65,7 @@ class SessionController(
     @Authenticate
     @GetMapping("/{token}")
     fun get(@PathVariable token: String): ResponseEntity<ApiResponse<SessionDto>> =
-        controller {
+        controller(permissions = listOf("session:read")) {
             ResponseEntity.ok().body(
                 ApiResponse(
                     message = i18nService.get("success"),
@@ -78,7 +78,7 @@ class SessionController(
     @Authenticate
     @GetMapping
     fun get(): ResponseEntity<ApiResponse<SessionDto>> =
-        controller {
+        controller(permissions = listOf("session:read")) {
             ResponseEntity.ok().body(
                 ApiResponse(
                     message = i18nService.get("success"),
@@ -91,7 +91,7 @@ class SessionController(
     @Authenticate
     @DeleteMapping
     fun delete(): ResponseEntity<ApiResponse<Nothing>> =
-        controller {
+        controller(permissions = listOf("session:delete")) {
             sessionService.delete()
 
             ResponseEntity.ok().body(
@@ -105,7 +105,7 @@ class SessionController(
     @Authenticate
     @DeleteMapping("/{token}")
     fun delete(@PathVariable token: String): ResponseEntity<ApiResponse<Nothing>> =
-        controller {
+        controller(permissions = listOf("session:delete")) {
             sessionService.delete(tokenId = token)
 
             ResponseEntity.ok().body(

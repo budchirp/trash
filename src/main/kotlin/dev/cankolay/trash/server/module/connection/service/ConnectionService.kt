@@ -4,36 +4,28 @@ import dev.cankolay.trash.server.common.service.JwtService
 import dev.cankolay.trash.server.module.application.exception.ApplicationNotFoundException
 import dev.cankolay.trash.server.module.application.repository.ApplicationRepository
 import dev.cankolay.trash.server.module.auth.context.AuthContext
-import dev.cankolay.trash.server.module.auth.entity.Token
-import dev.cankolay.trash.server.module.auth.repository.TokenRepository
+import dev.cankolay.trash.server.module.auth.entity.TokenType
 import dev.cankolay.trash.server.module.auth.service.TokenService
 import dev.cankolay.trash.server.module.connection.entity.Connection
 import dev.cankolay.trash.server.module.connection.exception.ConnectionNotFoundException
 import dev.cankolay.trash.server.module.connection.repository.ConnectionRepository
-import dev.cankolay.trash.server.module.security.repository.PermissionRepository
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ConnectionService(
     private val applicationRepository: ApplicationRepository,
-    private val tokenRepository: TokenRepository,
     private val connectionRepository: ConnectionRepository,
     private val authContext: AuthContext,
     private val jwtService: JwtService,
-    private val permissionRepository: PermissionRepository,
     private val tokenService: TokenService
 ) {
     @Transactional
-    fun connect(applicationId: String, callback: String, permissions: Set<String>): String {
+    fun connect(applicationId: String, callback: String, permissions: List<String>): String {
         val application = applicationRepository.findById(applicationId).orElseThrow { ApplicationNotFoundException() }
         val user = authContext.user!!
 
-        val token = tokenRepository.save(
-            Token(
-                permissions = permissionRepository.findByKeyIn(keys = permissions.toSet()).toMutableSet()
-            )
-        )
+        val token = tokenService.create(type = TokenType.CONNECTION, permissionKeys = permissions)
 
         connectionRepository.save(
             Connection(

@@ -21,8 +21,8 @@ class ConnectionController(
 ) {
     @Authenticate
     @PostMapping("/connect")
-    fun connect(@RequestBody body: ConnectRequestDto): ResponseEntity<ApiResponse<ConnectResponseDto?>> =
-        controller {
+    fun connect(@RequestBody body: ConnectRequestDto): ResponseEntity<ApiResponse<ConnectResponseDto>> =
+        controller(permissions = listOf("connection:create")) {
             ResponseEntity.ok().body(
                 ApiResponse(
                     message = i18nService.get("success"),
@@ -31,7 +31,7 @@ class ConnectionController(
                         redirect = connectionService.connect(
                             applicationId = body.applicationId,
                             callback = body.callback,
-                            permissions = body.permissions
+                            permissions = body.permissions.toList()
                         )
                     )
                 )
@@ -41,7 +41,7 @@ class ConnectionController(
     @Authenticate
     @GetMapping("/all")
     fun getAll(): ResponseEntity<ApiResponse<List<ConnectionDto>>> =
-        controller {
+        controller(permissions = listOf("connection:read")) {
             ResponseEntity.ok().body(
                 ApiResponse(
                     message = i18nService.get("success"),
@@ -54,7 +54,7 @@ class ConnectionController(
     @Authenticate
     @GetMapping("/{id}")
     fun get(@PathVariable id: Long): ResponseEntity<ApiResponse<ConnectionDto>> =
-        controller {
+        controller(permissions = listOf("connection:read")) {
             ResponseEntity.ok().body(
                 ApiResponse(
                     message = i18nService.get("success"),
@@ -67,7 +67,7 @@ class ConnectionController(
     @Authenticate
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: Long): ResponseEntity<ApiResponse<Nothing>> =
-        controller {
+        controller(permissions = listOf("connection:delete")) {
             connectionService.delete(id)
 
             ResponseEntity.ok().body(

@@ -21,15 +21,15 @@ class ApplicationController(
 
     @Authenticate
     @PostMapping
-    fun create(@RequestBody body: CreateApplicationRequestDto): ResponseEntity<ApiResponse<Nothing?>> =
-        controller {
-            applicationService.create(name = body.name, description = body.description)
+    fun create(@RequestBody body: CreateApplicationRequestDto): ResponseEntity<ApiResponse<ApplicationDto>> =
+        controller(permissions = listOf("application:create")) {
+
 
             ResponseEntity.ok().body(
                 ApiResponse(
                     message = i18nService.get("success"),
                     code = "success",
-                    data = null
+                    data = applicationService.create(name = body.name, description = body.description).toDto()
                 )
             )
         }
@@ -37,7 +37,7 @@ class ApplicationController(
     @Authenticate
     @GetMapping("/all")
     fun getAll(): ResponseEntity<ApiResponse<List<ApplicationDto>>> =
-        controller {
+        controller(permissions = listOf("application:read")) {
             ResponseEntity.ok().body(
                 ApiResponse(
                     message = i18nService.get("success"),
@@ -50,7 +50,7 @@ class ApplicationController(
     @Authenticate
     @GetMapping("/{id}")
     fun get(@PathVariable id: String): ResponseEntity<ApiResponse<ApplicationDto>> =
-        controller {
+        controller(permissions = listOf("application:read")) {
             ResponseEntity.ok().body(
                 ApiResponse(
                     message = i18nService.get("success"),
@@ -63,7 +63,7 @@ class ApplicationController(
     @Authenticate
     @DeleteMapping("/{id}")
     fun delete(@PathVariable id: String): ResponseEntity<ApiResponse<Nothing>> =
-        controller {
+        controller(permissions = listOf("application:delete")) {
             applicationService.delete(id)
 
             ResponseEntity.ok().body(
