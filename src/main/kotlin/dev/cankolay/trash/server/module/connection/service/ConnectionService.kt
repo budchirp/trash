@@ -47,20 +47,16 @@ class ConnectionService(
     }
 
     @Transactional
-    fun get(id: Long): Connection = connectionRepository.findByIdAndUserId(id = id, userId = authContext.userId!!)
-        ?: throw ConnectionNotFoundException()
-
-    @Transactional
     fun get(tokenId: String): Connection =
         connectionRepository.findByTokenIdAndUserId(tokenId = tokenId, userId = authContext.userId!!)
             ?: throw ConnectionNotFoundException()
 
     @Transactional
-    fun delete(id: Long) {
-        val connection = get(id)
+    fun delete(tokenId: String) {
+        val connection = get(tokenId = tokenId)
+
+        connectionRepository.deleteByTokenIdAndUserId(tokenId = tokenId, userId = authContext.userId!!)
 
         tokenService.delete(id = connection.token.id)
-
-        connectionRepository.deleteById(id)
     }
 }

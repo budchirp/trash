@@ -57,7 +57,7 @@ class SessionController(
                 ApiResponse(
                     message = i18nService.get("success"),
                     code = "success",
-                    data = sessionService.getAll().map { session -> session.toDto() }
+                    data = sessionService.getAll().map { it.toDto() }
                 )
             )
         }

@@ -33,5 +33,6 @@ data class Application(
 fun Application.toDto() = ApplicationDto(
     id = this.id,
     name = this.name,
-    description = this.description
+    description = this.description,
+    createdAt = this.createdAt.toString()
 )

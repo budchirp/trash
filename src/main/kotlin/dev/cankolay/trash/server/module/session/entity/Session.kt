@@ -53,4 +53,5 @@ fun Session.toDto() = SessionDto(
         platform = this.platform.name,
         os = this.os
     ),
+    createdAt = this.createdAt.toString()
 )

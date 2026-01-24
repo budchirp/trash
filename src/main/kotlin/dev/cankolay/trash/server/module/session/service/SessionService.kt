@@ -72,9 +72,9 @@ class SessionService(
             throw SessionNotFoundException()
         }
 
-        tokenService.delete(id = tokenId)
-
         sessionRepository.deleteByTokenId(tokenId = tokenId)
+
+        tokenService.delete(id = tokenId)
     }
 
     @Transactional

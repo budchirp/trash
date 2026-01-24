@@ -40,7 +40,7 @@ data class Connection(
 )
 
 fun Connection.toDto() = ConnectionDto(
-    id = this.id,
     application = this.application.toDto(),
     token = this.token.toDto(),
+    createdAt = this.createdAt.toString()
 )

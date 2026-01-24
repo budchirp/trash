@@ -52,23 +52,23 @@ class ConnectionController(
         }
 
     @Authenticate
-    @GetMapping("/{id}")
-    fun get(@PathVariable id: Long): ResponseEntity<ApiResponse<ConnectionDto>> =
+    @GetMapping("/{token}")
+    fun get(@PathVariable token: String): ResponseEntity<ApiResponse<ConnectionDto>> =
         controller(permissions = listOf("connection:read")) {
             ResponseEntity.ok().body(
                 ApiResponse(
                     message = i18nService.get("success"),
                     code = "success",
-                    data = connectionService.get(id).toDto()
+                    data = connectionService.get(tokenId = token).toDto()
                 )
             )
         }
 
     @Authenticate
-    @DeleteMapping("/{id}")
-    fun delete(@PathVariable id: Long): ResponseEntity<ApiResponse<Nothing>> =
+    @DeleteMapping("/{token}")
+    fun delete(@PathVariable token: String): ResponseEntity<ApiResponse<Nothing>> =
         controller(permissions = listOf("connection:delete")) {
-            connectionService.delete(id)
+            connectionService.delete(tokenId = token)
 
             ResponseEntity.ok().body(
                 ApiResponse(

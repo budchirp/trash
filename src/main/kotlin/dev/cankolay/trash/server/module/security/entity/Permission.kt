@@ -1,6 +1,5 @@
 package dev.cankolay.trash.server.module.security.entity
 
-import dev.cankolay.trash.server.module.security.dto.PermissionDto
 import jakarta.persistence.*
 
 @Entity
@@ -14,6 +13,4 @@ data class Permission(
     val key: String
 )
 
-fun Permission.toDto() = PermissionDto(
-    key = this.key
-)
+fun Permission.toDto() = this.key

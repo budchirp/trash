@@ -4,7 +4,7 @@ import dev.cankolay.trash.server.module.application.dto.ApplicationDto
 import dev.cankolay.trash.server.module.auth.dto.TokenDto
 
 data class ConnectionDto(
-    val id: Long,
+    val token: TokenDto,
     val application: ApplicationDto,
-    val token: TokenDto
+    val createdAt: String,
 )

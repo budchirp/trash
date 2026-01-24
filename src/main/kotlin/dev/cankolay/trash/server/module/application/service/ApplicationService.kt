@@ -26,8 +26,8 @@ class ApplicationService(
         )
     }
 
-    fun exists(applicationId: String, userId: String) =
-        applicationRepository.existsByIdAndUserId(id = applicationId, userId = userId)
+    fun exists(id: String, userId: String) =
+        applicationRepository.existsByIdAndUserId(id = id, userId = userId)
 
     @Transactional
     fun getAll(): List<Application> {
@@ -35,15 +35,15 @@ class ApplicationService(
     }
 
     @Transactional
-    fun get(applicationId: String): Application =
-        applicationRepository.findById(applicationId).orElseThrow { ApplicationNotFoundException() }
+    fun get(id: String): Application =
+        applicationRepository.findById(id).orElseThrow { ApplicationNotFoundException() }
 
     @Transactional
-    fun delete(applicationId: String) {
-        if (!exists(applicationId = applicationId, userId = authContext.userId!!)) {
+    fun delete(id: String) {
+        if (!exists(id = id, userId = authContext.userId!!)) {
             throw UnauthorizedException()
         }
 
-        applicationRepository.deleteById(applicationId)
+        applicationRepository.deleteById(id)
     }
 }

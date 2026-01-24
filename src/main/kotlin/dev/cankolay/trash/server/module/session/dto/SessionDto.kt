@@ -14,5 +14,7 @@ data class SessionDto(
     val ip: String,
     val browser: String,
 
-    val device: SessionDtoDevice
+    val device: SessionDtoDevice,
+
+    val createdAt: String,
 )

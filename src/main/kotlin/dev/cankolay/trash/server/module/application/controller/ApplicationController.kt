@@ -23,8 +23,6 @@ class ApplicationController(
     @PostMapping
     fun create(@RequestBody body: CreateApplicationRequestDto): ResponseEntity<ApiResponse<ApplicationDto>> =
         controller(permissions = listOf("application:create")) {
-
-
             ResponseEntity.ok().body(
                 ApiResponse(
                     message = i18nService.get("success"),
@@ -55,7 +53,7 @@ class ApplicationController(
                 ApiResponse(
                     message = i18nService.get("success"),
                     code = "success",
-                    data = applicationService.get(applicationId = id).toDto()
+                    data = applicationService.get(id = id).toDto()
                 )
             )
         }

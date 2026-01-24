@@ -45,7 +45,7 @@ data class Token(
 
 
 fun Token.toDto() = TokenDto(
-    token = this.id,
+    id = this.id,
     expiresAt = this.expiresAt.toString(),
     permissions = this.permissions.map { it.toDto() }
 )
