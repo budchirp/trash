@@ -27,7 +27,8 @@ class ApplicationController(
                 ApiResponse(
                     message = i18nService.get("success"),
                     code = "success",
-                    data = applicationService.create(name = body.name, description = body.description).toDto()
+                    data = applicationService.create(name = body.name, description = body.description, icon = body.icon)
+                        .toDto()
                 )
             )
         }

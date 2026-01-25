@@ -21,7 +21,7 @@ class ConnectionService(
     private val tokenService: TokenService
 ) {
     @Transactional
-    fun connect(applicationId: String, callback: String, permissions: List<String>): String {
+    fun connect(applicationId: String, permissions: List<String>): String {
         val application = applicationRepository.findById(applicationId).orElseThrow { ApplicationNotFoundException() }
         val user = authContext.user!!
 
@@ -35,9 +35,7 @@ class ConnectionService(
             )
         )
 
-        val jwtToken = jwtService.generate(userId = user.id, token = token)
-
-        return "$callback${if (callback.contains("?")) "&" else "?"}token=$jwtToken"
+        return jwtService.generate(userId = user.id, token = token)
     }
 
     @Transactional

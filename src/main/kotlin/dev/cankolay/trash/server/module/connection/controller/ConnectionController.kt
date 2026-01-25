@@ -28,9 +28,8 @@ class ConnectionController(
                     message = i18nService.get("success"),
                     code = "success",
                     data = ConnectResponseDto(
-                        redirect = connectionService.connect(
+                        token = connectionService.connect(
                             applicationId = body.applicationId,
-                            callback = body.callback,
                             permissions = body.permissions.toList()
                         )
                     )

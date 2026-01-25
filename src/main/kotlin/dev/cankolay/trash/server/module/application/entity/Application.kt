@@ -17,6 +17,8 @@ data class Application(
     val name: String,
     val description: String,
 
+    val icon: String,
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     val user: User,
@@ -34,5 +36,6 @@ fun Application.toDto() = ApplicationDto(
     id = this.id,
     name = this.name,
     description = this.description,
+    icon = this.icon,
     createdAt = this.createdAt.toString()
 )

@@ -11,7 +11,7 @@ class UserAgentParser {
         .newBuilder()
         .withField("DeviceName")
         .withField("DeviceClass")
-        .withField("OperatingSystemName")
+        .withField("OperatingSystemNameVersion")
         .withField("AgentNameVersion")
         .build()
 
@@ -25,7 +25,7 @@ class UserAgentParser {
                 else -> UserAgentPlatform.DESKTOP
             },
 
-            os = it.getValue("OperatingSystemName"),
+            os = it.getValue("OperatingSystemNameVersion"),
             browser = it.getValue("AgentNameVersion"),
         )
     }

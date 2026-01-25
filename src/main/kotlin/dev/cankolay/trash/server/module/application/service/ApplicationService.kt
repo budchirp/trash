@@ -14,13 +14,14 @@ class ApplicationService(
     private val authContext: AuthContext
 ) {
     @Transactional
-    fun create(name: String, description: String): Application {
+    fun create(name: String, description: String, icon: String): Application {
         val user = authContext.user!!
 
         return applicationRepository.save(
             Application(
                 name = name,
                 description = description,
+                icon = icon,
                 user = user
             )
         )
