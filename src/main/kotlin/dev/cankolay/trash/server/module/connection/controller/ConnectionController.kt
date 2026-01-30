@@ -29,7 +29,7 @@ class ConnectionController(
                     code = "success",
                     data = ConnectResponseDto(
                         token = connectionService.connect(
-                            applicationId = body.applicationId,
+                            applicationId = body.application_id,
                             permissions = body.permissions.toList()
                         )
                     )

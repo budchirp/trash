@@ -25,17 +25,23 @@ class ConnectionService(
         val application = applicationRepository.findById(applicationId).orElseThrow { ApplicationNotFoundException() }
         val user = authContext.user!!
 
-        val token = tokenService.create(type = TokenType.CONNECTION, permissionKeys = permissions)
+        try {
+            val connection = getByApplicationId(applicationId = applicationId)
 
-        connectionRepository.save(
-            Connection(
-                application = application,
-                user = user,
-                token = token
+            return jwtService.generate(userId = user.id, token = connection.token)
+        } catch (_: Exception) {
+            val token = tokenService.create(type = TokenType.CONNECTION, permissionKeys = permissions)
+
+            connectionRepository.save(
+                Connection(
+                    application = application,
+                    user = user,
+                    token = token
+                )
             )
-        )
 
-        return jwtService.generate(userId = user.id, token = token)
+            return jwtService.generate(userId = user.id, token = token)
+        }
     }
 
     @Transactional
@@ -43,6 +49,10 @@ class ConnectionService(
         val user = authContext.user!!
         return connectionRepository.findAllByUserId(user.id)
     }
+
+    fun getByApplicationId(applicationId: String): Connection =
+        connectionRepository.findByApplicationIdAndUserId(applicationId = applicationId, userId = authContext.userId!!)
+            ?: throw ConnectionNotFoundException()
 
     @Transactional
     fun get(tokenId: String): Connection =

@@ -4,6 +4,7 @@ import dev.cankolay.trash.server.module.connection.entity.Connection
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface ConnectionRepository : JpaRepository<Connection, Long> {
+    fun findByApplicationIdAndUserId(applicationId: String, userId: String): Connection?
     fun findByTokenIdAndUserId(tokenId: String, userId: String): Connection?
     fun deleteByTokenIdAndUserId(tokenId: String, userId: String)
 

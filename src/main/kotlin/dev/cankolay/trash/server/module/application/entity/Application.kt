@@ -37,5 +37,5 @@ fun Application.toDto() = ApplicationDto(
     name = this.name,
     description = this.description,
     icon = this.icon,
-    createdAt = this.createdAt.toString()
+    created_at = this.createdAt.toString()
 )

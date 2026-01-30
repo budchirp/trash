@@ -16,5 +16,5 @@ data class SessionDto(
 
     val device: SessionDtoDevice,
 
-    val createdAt: String,
+    val created_at: String,
 )

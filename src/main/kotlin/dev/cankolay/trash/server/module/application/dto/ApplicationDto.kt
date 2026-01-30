@@ -8,5 +8,5 @@ data class ApplicationDto(
 
     val icon: String,
 
-    val createdAt: String
+    val created_at: String
 )
