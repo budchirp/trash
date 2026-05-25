@@ -9,10 +9,7 @@
   <img alt="Issues" src="https://img.shields.io/github/issues/budchirp/trash-server?style=for-the-badge&colorA=0b1221&colorB=FBC19D" />
 </div>
 
-## TODO
+## Configuration
 
-- [ ] Translate missing keys
-- [ ] Email confirmation
-- [ ] Password reset
-- [ ] Rate limiting
-- [ ] Some kind of bot protection
+Runtime configuration is environment-driven. At minimum, set `DB_URL`, `DB_USERNAME`, `DB_PASSWORD`, and `JWT_SECRET`
+outside local development.

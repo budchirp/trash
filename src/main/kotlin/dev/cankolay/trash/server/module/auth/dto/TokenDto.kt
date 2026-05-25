@@ -1,9 +1,9 @@
 package dev.cankolay.trash.server.module.auth.dto
 
-import dev.cankolay.trash.server.module.security.dto.PermissionDto
+import java.time.Instant
 
 data class TokenDto(
     val id: String,
-    val expiresAt: String,
-    val permissions: List<PermissionDto>
+    val expiresAt: Instant,
+    val permissions: List<String>
 )

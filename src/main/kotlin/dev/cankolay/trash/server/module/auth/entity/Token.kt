@@ -1,8 +1,5 @@
 package dev.cankolay.trash.server.module.auth.entity
 
-import dev.cankolay.trash.server.module.auth.dto.TokenDto
-import dev.cankolay.trash.server.module.security.entity.Permission
-import dev.cankolay.trash.server.module.security.entity.toDto
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
@@ -16,20 +13,21 @@ enum class TokenType {
 
 @Entity
 @Table(name = "tokens")
-data class Token(
+class Token(
     @Id
     val id: String = UUID.randomUUID().toString(),
 
     @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
     val type: TokenType = TokenType.SESSION,
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(
         name = "token_permissions",
-        joinColumns = [JoinColumn(name = "token_id")],
-        inverseJoinColumns = [JoinColumn(name = "permission_id")]
+        joinColumns = [JoinColumn(name = "token_id")]
     )
-    val permissions: MutableSet<Permission> = mutableSetOf(),
+    @Column(name = "permission", nullable = false)
+    val permissions: MutableSet<String> = mutableSetOf(),
 
     @Column(name = "expires_at", nullable = false)
     val expiresAt: Instant = Instant.now().plusSeconds(30L * 24 * 60 * 60),
@@ -41,11 +39,4 @@ data class Token(
     @UpdateTimestamp
     @Column(name = "updated_at")
     val updatedAt: Instant? = null,
-)
-
-
-fun Token.toDto() = TokenDto(
-    id = this.id,
-    expiresAt = this.expiresAt.toString(),
-    permissions = this.permissions.map { it.toDto() }
 )

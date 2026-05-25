@@ -2,9 +2,6 @@ package dev.cankolay.trash.server.module.session.entity
 
 import dev.cankolay.trash.server.common.model.UserAgentPlatform
 import dev.cankolay.trash.server.module.auth.entity.Token
-import dev.cankolay.trash.server.module.auth.entity.toDto
-import dev.cankolay.trash.server.module.session.dto.SessionDto
-import dev.cankolay.trash.server.module.session.dto.SessionDtoDevice
 import dev.cankolay.trash.server.module.user.entity.User
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
@@ -13,22 +10,29 @@ import java.time.Instant
 
 @Entity
 @Table(name = "sessions")
-data class Session(
+class Session(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = [CascadeType.ALL], orphanRemoval = true)
-    @JoinColumn(name = "token_id", nullable = false)
+    @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
+    @JoinColumn(name = "token_id", nullable = false, unique = true)
     val token: Token,
 
+    @Column(nullable = false)
     val ip: String,
+
+    @Column(nullable = false)
     val device: String,
 
+    @Column(nullable = false)
     val os: String,
+
+    @Column(nullable = false)
     val browser: String,
 
     @Enumerated(value = EnumType.STRING)
+    @Column(nullable = false)
     val platform: UserAgentPlatform,
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -42,16 +46,4 @@ data class Session(
     @UpdateTimestamp
     @Column(name = "updated_at")
     val updatedAt: Instant? = null,
-)
-
-fun Session.toDto() = SessionDto(
-    token = this.token.toDto(),
-    ip = this.ip,
-    browser = this.browser,
-    device = SessionDtoDevice(
-        name = this.device,
-        platform = this.platform.name,
-        os = this.os
-    ),
-    created_at = this.createdAt.toString()
 )

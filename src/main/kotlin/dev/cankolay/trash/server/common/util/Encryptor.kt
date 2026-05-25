@@ -13,7 +13,7 @@ class Encryptor {
         4
     )
 
-    fun encrypt(password: String): String = encoder.encode(password)!!
+    fun encrypt(password: String): String = requireNotNull(encoder.encode(password))
 
     fun check(password: String, encrypted: String): Boolean = encoder.matches(password, encrypted)
 }

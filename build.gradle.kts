@@ -16,12 +16,6 @@ java {
     }
 }
 
-configurations {
-    compileOnly {
-        extendsFrom(configurations.annotationProcessor.get())
-    }
-}
-
 repositories {
     mavenCentral()
 }
@@ -36,7 +30,6 @@ dependencies {
 
     implementation(libs.jackson)
 
-    implementation(libs.bundles.flyway)
     runtimeOnly(libs.postgresql)
 
     implementation(libs.bouncycastle)
@@ -47,9 +40,6 @@ dependencies {
     implementation(libs.yauaa)
 
     developmentOnly(libs.spring.boot.devtools)
-
-    compileOnly(libs.lombok)
-    annotationProcessor(libs.lombok)
 }
 
 allOpen {

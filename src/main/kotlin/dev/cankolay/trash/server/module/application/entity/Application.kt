@@ -1,6 +1,5 @@
 package dev.cankolay.trash.server.module.application.entity
 
-import dev.cankolay.trash.server.module.application.dto.ApplicationDto
 import dev.cankolay.trash.server.module.user.entity.User
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
@@ -10,17 +9,21 @@ import java.util.*
 
 @Entity
 @Table(name = "applications")
-data class Application(
+class Application(
     @Id
     val id: String = UUID.randomUUID().toString(),
 
+    @Column(nullable = false, length = 100)
     val name: String,
+
+    @Column(nullable = false, length = 500)
     val description: String,
 
+    @Column(nullable = false, length = 2048)
     val icon: String,
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "user_id", nullable = false)
     val user: User,
 
     @CreationTimestamp
@@ -30,12 +33,4 @@ data class Application(
     @UpdateTimestamp
     @Column(name = "updated_at")
     val updatedAt: Instant? = null,
-)
-
-fun Application.toDto() = ApplicationDto(
-    id = this.id,
-    name = this.name,
-    description = this.description,
-    icon = this.icon,
-    created_at = this.createdAt.toString()
 )

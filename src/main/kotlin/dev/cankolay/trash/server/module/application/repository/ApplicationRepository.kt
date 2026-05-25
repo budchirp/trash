@@ -4,7 +4,9 @@ import dev.cankolay.trash.server.module.application.entity.Application
 import org.springframework.data.jpa.repository.JpaRepository
 
 interface ApplicationRepository : JpaRepository<Application, String> {
-    fun existsByIdAndUserId(id: String, userId: String): Boolean
+    fun findByIdAndUserId(id: String, userId: String): Application?
 
     fun findAllByUserId(userId: String): List<Application>
+
+    fun deleteAllByUserId(userId: String): Long
 }

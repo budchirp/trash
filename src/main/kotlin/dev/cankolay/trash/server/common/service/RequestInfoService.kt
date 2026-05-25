@@ -9,11 +9,5 @@ class RequestInfoService {
     fun getUserAgent(request: HttpServletRequest) =
         request.getHeader("User-Agent") ?: "Unknown"
 
-    fun getClientIp(request: HttpServletRequest): String {
-        val xForwardedFor = request.getHeader("X-Forwarded-For")
-        return when {
-            !xForwardedFor.isNullOrBlank() -> xForwardedFor.split(",")[0].trim()
-            else -> request.remoteAddr ?: "0.0.0.0"
-        }
-    }
+    fun getClientIp(request: HttpServletRequest): String = request.remoteAddr ?: "0.0.0.0"
 }

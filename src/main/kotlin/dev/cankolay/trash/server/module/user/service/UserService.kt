@@ -1,69 +1,64 @@
 package dev.cankolay.trash.server.module.user.service
 
 import dev.cankolay.trash.server.common.util.Encryptor
-import dev.cankolay.trash.server.module.auth.context.AuthContext
+import dev.cankolay.trash.server.module.application.repository.ApplicationRepository
+import dev.cankolay.trash.server.module.auth.service.AuthService
+import dev.cankolay.trash.server.module.connection.repository.ConnectionRepository
 import dev.cankolay.trash.server.module.security.service.SecurityTokenService
-import dev.cankolay.trash.server.module.session.exception.UserNotFoundException
 import dev.cankolay.trash.server.module.session.repository.SessionRepository
+import dev.cankolay.trash.server.module.user.entity.Profile
 import dev.cankolay.trash.server.module.user.entity.User
-import dev.cankolay.trash.server.module.user.exception.InvalidVerificationTokenException
 import dev.cankolay.trash.server.module.user.exception.UserExistsException
-import dev.cankolay.trash.server.module.user.repository.ProfileRepository
+import dev.cankolay.trash.server.module.user.exception.UserNotFoundException
 import dev.cankolay.trash.server.module.user.repository.UserRepository
-import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class UserService(
-    private val profileService: ProfileService,
     private val userRepository: UserRepository,
-    private val profileRepository: ProfileRepository,
     private val sessionRepository: SessionRepository,
-    private val authContext: AuthContext,
+    private val connectionRepository: ConnectionRepository,
+    private val applicationRepository: ApplicationRepository,
+    private val auth: AuthService,
     private val encryptor: Encryptor,
     private val securityTokenService: SecurityTokenService
 ) {
     @Transactional
     fun create(email: String, username: String, password: String): User {
-        if (exists(email = email, username = username)) {
+        if (userRepository.existsByEmailOrUsername(email = email, username = username)) {
             throw UserExistsException()
         }
-
-        val profile = profileService.create()
 
         return userRepository.save(
             User(
                 email = email,
                 username = username,
-                password = encryptor.encrypt(password),
-                profile = profile
+                password = encryptor.encrypt(password = password),
+                profile = Profile()
             )
         )
     }
 
-    fun exists(email: String, username: String) =
-        userRepository.existsByEmailAndUsername(email = email, username = username)
+    @Transactional(readOnly = true)
+    fun get(id: String): User = userRepository.findById(id).orElseThrow { UserNotFoundException() }
+
+    @Transactional(readOnly = true)
+    fun get(): User = auth.user()
 
     @Transactional
-    fun get(id: String): User {
-        val user = userRepository.findById(id).orElseThrow { UserNotFoundException() }
-        return user.copy()
-    }
+    fun delete(securityToken: String) {
+        securityTokenService.verify(jwt = securityToken)
 
-    @Transactional
-    fun get(): User = get(id = authContext.userId!!)
+        val user = auth.user()
+        sessionRepository.deleteAll(sessionRepository.findAllByUserId(user.id))
+        connectionRepository.deleteAll(connectionRepository.findAllByUserId(user.id))
 
-    @Transactional
-    fun delete(jwt: String) {
-        if (!securityTokenService.verify(jwt = jwt)) {
-            throw InvalidVerificationTokenException()
-        }
+        sessionRepository.flush()
+        connectionRepository.flush()
 
-        val user = authContext.user!!
+        applicationRepository.deleteAllByUserId(user.id)
 
-        sessionRepository.deleteAllByUserId(userId = user.id)
-        profileRepository.deleteById(user.profile.id)
-
-        userRepository.deleteById(user.id)
+        userRepository.delete(user)
     }
 }

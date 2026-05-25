@@ -1,10 +1,12 @@
 package dev.cankolay.trash.server.module.session.dto
 
+import dev.cankolay.trash.server.common.model.UserAgentPlatform
 import dev.cankolay.trash.server.module.auth.dto.TokenDto
+import java.time.Instant
 
 data class SessionDtoDevice(
     val name: String,
-    val platform: String,
+    val platform: UserAgentPlatform,
     val os: String,
 )
 
@@ -16,5 +18,5 @@ data class SessionDto(
 
     val device: SessionDtoDevice,
 
-    val created_at: String,
+    val createdAt: Instant?,
 )

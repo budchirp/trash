@@ -3,16 +3,15 @@ package dev.cankolay.trash.server.module.session.service
 import dev.cankolay.trash.server.common.model.UserAgent
 import dev.cankolay.trash.server.common.service.JwtService
 import dev.cankolay.trash.server.common.util.Encryptor
-import dev.cankolay.trash.server.module.auth.context.AuthContext
+import dev.cankolay.trash.server.module.auth.service.AuthService
 import dev.cankolay.trash.server.module.auth.service.TokenService
 import dev.cankolay.trash.server.module.session.entity.Session
-import dev.cankolay.trash.server.module.session.exception.InvalidPasswordException
+import dev.cankolay.trash.server.module.session.exception.InvalidCredentialsException
 import dev.cankolay.trash.server.module.session.exception.SessionNotFoundException
-import dev.cankolay.trash.server.module.session.exception.UserNotFoundException
 import dev.cankolay.trash.server.module.session.repository.SessionRepository
 import dev.cankolay.trash.server.module.user.repository.UserRepository
-import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class SessionService(
@@ -20,15 +19,15 @@ class SessionService(
     private val sessionRepository: SessionRepository,
     private val tokenService: TokenService,
     private val jwtService: JwtService,
-    private val authContext: AuthContext,
+    private val auth: AuthService,
     private val encryptor: Encryptor
 ) {
     @Transactional
     fun create(userAgent: UserAgent, ip: String, email: String, password: String): String {
-        val user = userRepository.findByEmail(email) ?: throw UserNotFoundException()
+        val user = userRepository.findByEmail(email) ?: throw InvalidCredentialsException()
 
         if (!encryptor.check(password = password, encrypted = user.password)) {
-            throw InvalidPasswordException()
+            throw InvalidCredentialsException()
         }
 
         val token = tokenService.create()
@@ -49,34 +48,25 @@ class SessionService(
             )
         )
 
-        return jwtService.generate(userId = user.id, token = session.token)
+        return jwtService.generateAccessToken(userId = user.id, token = session.token)
     }
 
-    fun exists(tokenId: String, userId: String) =
-        sessionRepository.existsByTokenIdAndUserId(tokenId = tokenId, userId = userId)
+    @Transactional(readOnly = true)
+    fun getAll(): List<Session> = sessionRepository.findAllByUserId(userId = auth.id())
 
-    @Transactional
-    fun getAll(): List<Session> = sessionRepository.findAllByUserId(userId = authContext.userId!!)
-
-    @Transactional
+    @Transactional(readOnly = true)
     fun get(tokenId: String): Session =
-        sessionRepository.findByTokenIdAndUserId(tokenId = tokenId, userId = authContext.userId!!)
+        sessionRepository.findByTokenIdAndUserId(tokenId = tokenId, userId = auth.id())
             ?: throw SessionNotFoundException()
 
-    @Transactional
-    fun get(): Session = get(tokenId = authContext.tokenId!!)
+    @Transactional(readOnly = true)
+    fun get(): Session = get(tokenId = auth.token().id)
 
     @Transactional
     fun delete(tokenId: String) {
-        if (!exists(tokenId = tokenId, userId = authContext.userId!!)) {
-            throw SessionNotFoundException()
-        }
-
-        sessionRepository.deleteByTokenId(tokenId = tokenId)
-
-        tokenService.delete(id = tokenId)
+        sessionRepository.delete(get(tokenId = tokenId))
     }
 
     @Transactional
-    fun delete() = delete(tokenId = authContext.tokenId!!)
+    fun delete() = delete(tokenId = auth.token().id)
 }

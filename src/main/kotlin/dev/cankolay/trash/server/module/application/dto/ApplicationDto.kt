@@ -1,5 +1,7 @@
 package dev.cankolay.trash.server.module.application.dto
 
+import java.time.Instant
+
 data class ApplicationDto(
     val id: String,
 
@@ -8,5 +10,5 @@ data class ApplicationDto(
 
     val icon: String,
 
-    val created_at: String
+    val createdAt: Instant?
 )

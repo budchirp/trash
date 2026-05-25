@@ -1,19 +1,23 @@
 spring:
   application:
-    name: trash-core
+    name: trash-server
   datasource:
-    url: jdbc:postgresql://localhost:5432/trash
-    username: postgres
-    password: can
-  devtools:
-    restart:
-      enabled: false
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/trash?currentSchema=public}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    hikari:
+      connection-init-sql: create schema if not exists public
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: ${JPA_DDL_AUTO:update}
+    properties:
+      hibernate:
+        default_schema: public
+    show-sql: ${JPA_SHOW_SQL:false}
   messages:
     basename: i18n/messages
+  jackson:
+    property-naming-strategy: SNAKE_CASE
 
 springdoc:
   api-docs:
@@ -23,10 +27,12 @@ springdoc:
     path: /swagger
 
 scalar:
-  url: http://localhost:8080/openapi.json
+  url: ${SCALAR_OPENAPI_URL:http://localhost:8080/openapi.json}
   path: /scalar
-  enabled: true
+  enabled: ${SCALAR_ENABLED:true}
 
 app:
   jwt:
-    secret: yImRb4CB0OtJcs74Lpzv9WcfoEFnqxVnyImRb4CB0OtJcs74Lpzv9WcfoEFnqxVnyImRb4CB0OtJcs74Lpzv9WcfoEFnqxVn
+    secret: ${JWT_SECRET:change-this-development-secret-change-this-development-secret-change-this-development-secret}
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGINS:*}

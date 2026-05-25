@@ -1,7 +1,6 @@
 package dev.cankolay.trash.server.module.user.entity
 
 import dev.cankolay.trash.server.module.session.entity.Session
-import dev.cankolay.trash.server.module.user.dto.UserDto
 import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
@@ -10,22 +9,24 @@ import java.util.*
 
 @Entity
 @Table(name = "users")
-data class User(
+class User(
     @Id
     val id: String = UUID.randomUUID().toString(),
 
+    @Column(nullable = false, unique = true)
     val email: String,
+
+    @Column(nullable = false, unique = true)
     var username: String,
 
+    @Column(nullable = false)
     val password: String,
 
-    val verified: Boolean = false,
+    @OneToOne(fetch = FetchType.EAGER, cascade = [CascadeType.ALL], orphanRemoval = true)
+    @JoinColumn(name = "profile_id", referencedColumnName = "id", nullable = false)
+    var profile: Profile = Profile(),
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "profile_id", referencedColumnName = "id")
-    var profile: Profile,
-
-    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = [CascadeType.REMOVE], orphanRemoval = true)
     var sessions: MutableSet<Session> = mutableSetOf(),
 
     @CreationTimestamp
@@ -35,11 +36,4 @@ data class User(
     @UpdateTimestamp
     @Column(name = "updated_at")
     val updatedAt: Instant? = null,
-)
-
-fun User.toDto() = UserDto(
-    id = this.id,
-    email = this.email,
-    username = this.username,
-    profile = this.profile.toDto()
 )

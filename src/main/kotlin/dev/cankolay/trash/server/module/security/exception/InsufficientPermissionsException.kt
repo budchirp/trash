@@ -4,4 +4,4 @@ import dev.cankolay.trash.server.common.exception.ApiException
 import org.springframework.http.HttpStatus
 
 class InsufficientPermissionsException :
-    ApiException(status = HttpStatus.NOT_FOUND, code = "insufficent_permissions", message = "Insufficient permissions")
+    ApiException(status = HttpStatus.FORBIDDEN, code = "insufficient_permissions", message = "Insufficient permissions")

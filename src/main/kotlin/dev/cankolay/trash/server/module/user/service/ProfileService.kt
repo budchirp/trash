@@ -1,26 +1,27 @@
 package dev.cankolay.trash.server.module.user.service
 
-import dev.cankolay.trash.server.module.auth.context.AuthContext
+import dev.cankolay.trash.server.module.auth.service.AuthService
+import dev.cankolay.trash.server.module.user.dto.request.ProfileRequestDto
 import dev.cankolay.trash.server.module.user.entity.Profile
-import dev.cankolay.trash.server.module.user.repository.ProfileRepository
-import jakarta.transaction.Transactional
+import dev.cankolay.trash.server.module.user.entity.ProfileGender
+import dev.cankolay.trash.server.module.user.exception.InvalidProfileGenderException
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 @Service
 class ProfileService(
-    private val profileRepository: ProfileRepository,
-    private val authContext: AuthContext,
+    private val auth: AuthService,
 ) {
     @Transactional
-    fun create(): Profile = profileRepository.save(Profile())
+    fun update(body: ProfileRequestDto): Profile {
+        val user = auth.user()
 
-    @Transactional
-    fun update(name: String?, picture: String?) {
-        val user = authContext.user!!
+        user.profile.name = body.name ?: user.profile.name
+        user.profile.picture = body.picture ?: user.profile.picture
+        user.profile.gender = body.gender?.let {
+            ProfileGender.fromValue(value = it) ?: throw InvalidProfileGenderException()
+        } ?: user.profile.gender
 
-        user.profile.name = name ?: user.profile.name
-        user.profile.picture = picture ?: user.profile.picture
-
-        profileRepository.save(user.profile)
+        return user.profile
     }
 }
