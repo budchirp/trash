@@ -9,7 +9,13 @@ import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
 
 @Entity
-@Table(name = "connections")
+@Table(
+    name = "connections",
+    uniqueConstraints = [UniqueConstraint(
+        name = "uk_connections_application_user",
+        columnNames = ["application_id", "user_id"]
+    )]
+)
 class Connection(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

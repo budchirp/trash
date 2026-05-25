@@ -7,6 +7,7 @@ import dev.cankolay.trash.server.module.auth.entity.TokenType
 import dev.cankolay.trash.server.module.auth.model.AuthPrincipal
 import dev.cankolay.trash.server.module.connection.repository.ConnectionRepository
 import dev.cankolay.trash.server.module.security.PermissionKeys
+import dev.cankolay.trash.server.module.security.exception.InsufficientPermissionsException
 import dev.cankolay.trash.server.module.session.exception.UnauthorizedException
 import dev.cankolay.trash.server.module.session.repository.SessionRepository
 import dev.cankolay.trash.server.module.user.entity.User
@@ -58,6 +59,12 @@ class AuthService(
 
     @Transactional(readOnly = true)
     fun token(): Token = tokenService.get(id = principal().token)
+
+    fun requireSession() {
+        if (principal().type != TokenType.SESSION) {
+            throw InsufficientPermissionsException()
+        }
+    }
 
     private fun tokenBelongsToUser(tokenId: String, userId: String, type: TokenType): Boolean =
         when (type) {

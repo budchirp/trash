@@ -24,7 +24,7 @@ class Application(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    val user: User,
+    val owner: User,
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)

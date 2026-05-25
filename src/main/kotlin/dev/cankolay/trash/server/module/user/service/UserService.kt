@@ -53,11 +53,12 @@ class UserService(
         val user = auth.user()
         sessionRepository.deleteAll(sessionRepository.findAllByUserId(user.id))
         connectionRepository.deleteAll(connectionRepository.findAllByUserId(user.id))
+        connectionRepository.deleteAll(connectionRepository.findAllByApplicationOwnerId(ownerId = user.id))
 
         sessionRepository.flush()
         connectionRepository.flush()
 
-        applicationRepository.deleteAllByUserId(user.id)
+        applicationRepository.deleteAllByOwnerId(ownerId = user.id)
 
         userRepository.delete(user)
     }

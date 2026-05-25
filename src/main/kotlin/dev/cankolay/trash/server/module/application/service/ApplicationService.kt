@@ -16,33 +16,40 @@ class ApplicationService(
 ) {
     @Transactional
     fun create(name: String, description: String, icon: String): Application {
+        auth.requireSession()
+
         return applicationRepository.save(
             Application(
                 name = name,
                 description = description,
                 icon = icon,
-                user = auth.user()
+                owner = auth.user()
             )
         )
     }
 
     @Transactional(readOnly = true)
-    fun getAll(): List<Application> = applicationRepository.findAllByUserId(userId = auth.id())
+    fun getAll(): List<Application> {
+        auth.requireSession()
+
+        return applicationRepository.findAllByOwnerId(ownerId = auth.id())
+    }
 
     @Transactional(readOnly = true)
     fun get(id: String): Application =
-        applicationRepository.findByIdAndUserId(id = id, userId = auth.id())
+        applicationRepository.findById(id).orElseThrow { ApplicationNotFoundException() }
+
+    @Transactional(readOnly = true)
+    fun getOwned(id: String): Application =
+        applicationRepository.findByIdAndOwnerId(id = id, ownerId = auth.id())
             ?: throw ApplicationNotFoundException()
 
     @Transactional
     fun delete(id: String) {
-        val application = get(id)
-        connectionRepository.deleteAll(
-            connectionRepository.findAllByApplicationIdAndUserId(
-                applicationId = id,
-                userId = auth.id()
-            )
-        )
+        auth.requireSession()
+
+        val application = getOwned(id = id)
+        connectionRepository.deleteAll(connectionRepository.findAllByApplicationId(applicationId = id))
         applicationRepository.delete(application)
     }
 }

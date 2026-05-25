@@ -4,6 +4,7 @@ import jakarta.persistence.*
 import org.hibernate.annotations.CreationTimestamp
 import org.hibernate.annotations.UpdateTimestamp
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 enum class TokenType {
@@ -30,7 +31,7 @@ class Token(
     val permissions: MutableSet<String> = mutableSetOf(),
 
     @Column(name = "expires_at", nullable = false)
-    val expiresAt: Instant = Instant.now().plusSeconds(30L * 24 * 60 * 60),
+    var expiresAt: Instant = defaultExpiresAt(),
 
     @CreationTimestamp
     @Column(name = "created_at", updatable = false)
@@ -39,4 +40,14 @@ class Token(
     @UpdateTimestamp
     @Column(name = "updated_at")
     val updatedAt: Instant? = null,
-)
+) {
+    fun grant(permissionKeys: Set<String>) {
+        permissions.clear()
+        permissions.addAll(permissionKeys)
+        expiresAt = defaultExpiresAt()
+    }
+
+    companion object {
+        fun defaultExpiresAt(): Instant = Instant.now().plus(30, ChronoUnit.DAYS)
+    }
+}

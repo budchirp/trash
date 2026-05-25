@@ -5,7 +5,8 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface ConnectionRepository : JpaRepository<Connection, Long> {
     fun findByApplicationIdAndUserId(applicationId: String, userId: String): Connection?
-    fun findAllByApplicationIdAndUserId(applicationId: String, userId: String): List<Connection>
+    fun findAllByApplicationId(applicationId: String): List<Connection>
+    fun findAllByApplicationOwnerId(ownerId: String): List<Connection>
     fun findByTokenIdAndUserId(tokenId: String, userId: String): Connection?
 
     fun findAllByUserId(userId: String): List<Connection>

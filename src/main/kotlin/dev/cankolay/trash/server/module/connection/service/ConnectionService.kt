@@ -29,28 +29,32 @@ class ConnectionService(
             throw InvalidPermissionsException()
         }
 
+        if (auth.token().type != TokenType.SESSION) {
+            throw InsufficientPermissionsException()
+        }
+
         if (!auth.permissions().containsAll(elements = permissions)) {
             throw InsufficientPermissionsException()
         }
 
-        val userId = auth.id()
-        val application = applicationRepository.findByIdAndUserId(id = applicationId, userId = userId)
-            ?: throw ApplicationNotFoundException()
+        val user = auth.user()
+        val application = applicationRepository.findById(applicationId).orElseThrow { ApplicationNotFoundException() }
 
-        connectionRepository.findByApplicationIdAndUserId(applicationId = applicationId, userId = userId)?.let {
-            return jwtService.generateAccessToken(userId = userId, token = it.token)
+        connectionRepository.findByApplicationIdAndUserId(applicationId = applicationId, userId = user.id)?.let {
+            it.token.grant(permissionKeys = permissions)
+            return jwtService.generateAccessToken(userId = user.id, token = it.token)
         }
 
         val token = tokenService.create(type = TokenType.CONNECTION, permissionKeys = permissions)
         connectionRepository.save(
             Connection(
                 application = application,
-                user = application.user,
+                user = user,
                 token = token
             )
         )
 
-        return jwtService.generateAccessToken(userId = userId, token = token)
+        return jwtService.generateAccessToken(userId = user.id, token = token)
     }
 
     @Transactional(readOnly = true)
